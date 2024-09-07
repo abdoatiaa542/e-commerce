@@ -56,16 +56,22 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private Set<CartItem> cartItems = new LinkedHashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "favorites",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users = new LinkedHashSet<>();
+//    @ManyToMany
+//    @JoinTable(name = "favorites",
+//            joinColumns = @JoinColumn(name = "product_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id"))
+//    private Set<User> favoriteProducts  = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "favoriteProducts")
+    private Set<User> userWhoFavorited = new LinkedHashSet<>();
+
+
 
     @OneToMany(mappedBy = "product")
     private Set<OrderItem> orderItems = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "product")
     private Set<Review> reviews = new LinkedHashSet<>();
+
 
 }

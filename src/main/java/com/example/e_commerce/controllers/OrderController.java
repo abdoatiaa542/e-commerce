@@ -51,18 +51,18 @@ public class OrderController {
     }
 
 
-//    @DeleteMapping("/cancelOrder")
-//    public ResponseEntity<Void> cancelOrder(@RequestParam Long orderId) {  // is canslation from  4  status ?
-//        orderService.cancelOrder(orderId);
-//        return ResponseEntity.noContent().build();
-//    }
+    @DeleteMapping("/cancelOrder")
+    public ResponseEntity<Void> cancelOrder(@RequestParam int orderId) {
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
 
 
-//    @PatchMapping("/updateStatus")
-//    public ResponseEntity<OrderDto> updateStatus(@RequestParam Long orderId, @RequestParam String status) {
-//        Order order = orderService.updateStatus(orderId, status);
-//        return ResponseEntity.ok(orderMapper.toOrderDto(order));
-//    }
+    @PatchMapping("/updateStatus")
+    public ResponseEntity<OrderDto> updateStatus(@RequestParam int orderId, @RequestParam String status) {
+        Order order = orderService.updateStatus(orderId, status);
+        return ResponseEntity.ok(orderMapper.toDto(order));
+    }
 
 
 }

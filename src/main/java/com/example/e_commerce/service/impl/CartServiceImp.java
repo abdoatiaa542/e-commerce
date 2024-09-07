@@ -2,8 +2,8 @@ package com.example.e_commerce.service.impl;
 
 import com.example.e_commerce.models.entity.Cart;
 import com.example.e_commerce.models.entity.CartItem;
-import com.example.e_commerce.models.entity.Product;
 import com.example.e_commerce.models.entity.User;
+import com.example.e_commerce.models.entity.Product;
 import com.example.e_commerce.reposatory.CartRepository;
 import com.example.e_commerce.reposatory.ProductRepository;
 import com.example.e_commerce.reposatory.UserRepository;
@@ -102,9 +102,22 @@ public class CartServiceImp implements CartService {
         return cartRepository.findByUserId(userId).orElse(null);
     }
 
+
     @Override
     public Cart removeAllFromCart(int userId) {
-        return null;
+        // 1. التأكد من وجود المستخدم في النظام
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 2. البحث عن كارت المستخدم
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        // 3. تفريغ الكارت
+        cart.getItems().clear();
+
+        // 4. حفظ الكارت بعد التحديثات
+        return cartRepository.save(cart);
     }
 
 

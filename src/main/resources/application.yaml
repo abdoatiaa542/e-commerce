@@ -13,7 +13,8 @@ spring:
       hibernate:
         format_sql: true
 
-#  security:
-#    user:
-#      name: Abdo
-#      password: 12345
+jwt:
+  secret-key: "your-secret-key"
+  expiration: 86000000                     # 15 minutes for access token
+  refresh-expiration: 604800000          # 7 days for refresh token
+

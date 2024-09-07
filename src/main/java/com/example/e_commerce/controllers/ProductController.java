@@ -8,6 +8,7 @@ import com.example.e_commerce.models.mappers.ProductDetailsMapper;
 import com.example.e_commerce.models.mappers.ProductMapper;
 import com.example.e_commerce.service.utils.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,23 +20,27 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
-
     @Autowired
     private ProductMapper productMapper;
     @Autowired
     private ProductDetailsMapper productDetailsMapper;
 
-    //  i will use pagination
     @GetMapping("/get_products")
-    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String name) {
-        List<Product> products;
+    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String name,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int size,
+                                                        @RequestParam(required = false, defaultValue = "id") String sortcol,
+                                                        @RequestParam(required = false, defaultValue = "true") boolean isAc) {
 
-        if (name == null) products = productService.getAllProducts();
-        else products = productService.getProductsByText(name);
+        Page<Product> products;
+        if (name == null) {
+            products = productService.getAllProducts(page, size, sortcol, isAc);
+        } else {
+            products = productService.getProductsByText(name, page, size, sortcol, isAc);
+        }
 
-        List<ProductDto> productDtos = productMapper.toProductDtoList(products);
+        List<ProductDto> productDtos = productMapper.toProductDtoList(products.getContent());
         return ResponseEntity.ok(productDtos);
-
     }
 
 
