@@ -9,10 +9,30 @@ import java.time.Instant;
 /**
  * DTO for {@link com.example.e_commerce.models.entity.Review}
  */
+
 @Value
-public class ReviewDto implements Serializable {
-    ReviewIdDto id;
+public class ReviewResponseDto implements Serializable {
+
+    Integer productId;
     BigDecimal rating;
-    Instant reviewDate;
     String reviewDescription;
+    Instant reviewDate;
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

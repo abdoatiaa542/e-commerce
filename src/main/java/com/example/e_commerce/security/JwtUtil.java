@@ -4,6 +4,7 @@ import com.example.e_commerce.models.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,7 @@ import java.util.function.Function;
 public class JwtUtil {
 
     @Value("${jwt.secret-key}")
-    private String SECRET_KEY;
+    private String secretKey;
 
     @Value("${jwt.expiration}")
     private long jwtExpiration;
@@ -24,26 +25,14 @@ public class JwtUtil {
     @Value("${jwt.refresh-expiration}")
     private long refreshTokenExpiration;
 
-    // استخراج البريد الإلكتروني من التوكن
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    // استخراج تاريخ انتهاء صلاحية التوكن
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    // التأكد من انتهاء صلاحية التوكن
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
 
     // توليد Access Token
     public String generateAccessToken(User userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userDetails.getId());
         return createToken(claims, userDetails.getEmail(), jwtExpiration);
     }
+
 
     // توليد Refresh Token
     public String generateRefreshToken(User userDetails) {
@@ -51,32 +40,49 @@ public class JwtUtil {
         return createToken(claims, userDetails.getEmail(), refreshTokenExpiration);
     }
 
-    // إنشاء توكن جديد
+
     private String createToken(Map<String, Object> claims, String subject, long expiration) {
-        return Jwts
-                .builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
-    // التحقق من صحة التوكن
-    public Boolean validateToken(String token, User userDetails) {
-        final String email = extractEmail(token);
-        return (email.equals(userDetails.getEmail()) && !isTokenExpired(token));
+    public boolean validateToken(String token, User user) {
+        String email = extractEmail(token);
+        return email.equals(user.getEmail()) && !isTokenExpired(token);
     }
 
-    // استخراج مطالبة من التوكن
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    public String extractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
-    // استخراج جميع المطالبات من التوكن
+    public int extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Integer.class);
+    }
+
+    public int getUserIdFromRequest(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        return extractUserId(token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        return claimsResolver.apply(extractAllClaims(token));
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 }
+

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  */
 
 @Value
-public class ProductDto implements Serializable {
+public class ProductResponseDto implements Serializable {
     Integer id;
     String name;
     Short quantityInStock;
@@ -19,6 +19,10 @@ public class ProductDto implements Serializable {
     String imageUrl;
     String productDetails;
     BigDecimal discountPercentage;
+
     BigDecimal rate;
+
+    CategoryResponseDto category;
+    NutritionResponseDto nutrition;
 
 }

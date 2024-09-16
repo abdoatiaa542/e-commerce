@@ -44,7 +44,7 @@ public class User implements UserDetails {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @ColumnDefault("0")
+
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
@@ -53,8 +53,18 @@ public class User implements UserDetails {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ColumnDefault("1")
     @JoinColumn(name = "role_id", nullable = false)
-    private UserRole role;
+    private UserRole role;  //   down
 
+
+    @PrePersist
+    @PreUpdate
+    private void ensureRole() {
+        if (this.role == null) {
+            UserRole defaultRole = new UserRole();
+            defaultRole.setId(1);
+            this.role = defaultRole;
+        }
+    }
 
     @OneToMany(mappedBy = "user")
     private Set<Cart> carts = new LinkedHashSet<>();
@@ -72,19 +82,6 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private Set<Review> reviews = new LinkedHashSet<>();
-
-
-    public User(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.email = user.getEmail();
-        this.address = user.getAddress();
-        this.phoneNumber = user.getPhoneNumber();
-        this.imageUrl = user.getImageUrl();
-        this.role = user.getRole(); // هنا بتضيف الـ role
-        this.isDeleted = user.getIsDeleted();
-    }
 
 
     @Override

@@ -16,8 +16,10 @@ import java.util.Objects;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class CartItemId implements Serializable {
     private static final long serialVersionUID = -5135266691918675326L;
+
     @Column(name = "cart_id", nullable = false)
     private Integer cartId;
 

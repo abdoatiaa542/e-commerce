@@ -8,7 +8,7 @@ import java.io.Serializable;
  * DTO for {@link com.example.e_commerce.models.entity.Nutrition}
  */
 @Value
-public class NutritionDto implements Serializable {
+public class NutritionResponseDto implements Serializable {
     Integer id;
     Integer calories;
     Integer protein;

@@ -6,11 +6,11 @@ import com.example.e_commerce.models.entity.ReviewId;
 
 public interface ReviewsService {
 
-    Review getReviewById(ReviewId id);
+    Review getReviewById(int userId, int productId);
 
     Review addReview(Review review);
 
     Review updateReview(ReviewId id, Review review);
 
-    void deleteReview(ReviewId id);
+    Review deleteReview(ReviewId id);
 }

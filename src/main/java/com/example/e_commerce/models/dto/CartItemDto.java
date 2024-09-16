@@ -7,8 +7,10 @@ import java.io.Serializable;
 /**
  * DTO for {@link com.example.e_commerce.models.entity.CartItem}
  */
+
+
 @Value
 public class CartItemDto implements Serializable {
-    CartItemIdDto id;
+    ProductResponseDto product;
     Long quantity;
 }

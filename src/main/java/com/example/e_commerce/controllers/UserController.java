@@ -1,45 +1,39 @@
 package com.example.e_commerce.controllers;
 
 
+import com.example.e_commerce.models.dto.RegisterDtoRequest;
 import com.example.e_commerce.models.dto.UserDto;
 import com.example.e_commerce.models.entity.User;
 import com.example.e_commerce.models.mappers.UserMapper;
 import com.example.e_commerce.security.*;
-import org.slf4j.LoggerFactory;
+import com.example.e_commerce.service.utils.OTPService;
+import com.example.e_commerce.service.utils.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
     private MyUserDetailsService userDetailsService;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
     private UserMapper userMapper;
-
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private OTPService otpService;
 
 
     @PostMapping("/refresh-token")
     public RefreshTokenResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
-        System.out.println("aeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-        System.out.println("Refresh Token Request: " + refreshTokenRequest.getRefreshToken());
         String refreshToken = refreshTokenRequest.getRefreshToken();
-        System.out.println("Refresh Token: " + refreshToken);
         User user = (User) userDetailsService.loadUserByUsername(jwtUtil.extractEmail(refreshToken));
-        System.out.println("User: " + user.getEmail());
 
         if (jwtUtil.validateToken(refreshToken, user)) {
             String newAccessToken = jwtUtil.generateAccessToken(user);
@@ -50,29 +44,71 @@ public class UserController {
     }
 
 
-
     @PostMapping("/login")
     public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
-        System.out.println("Password: " + authenticationRequest.getPassword());
-        System.out.println("Email: " + authenticationRequest.getEmail());
-
-
         User userDetails = (User) userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
         UserDto userDto = userMapper.toDto(userDetails);
-
-        System.out.println("UserDetails: " + userDetails.getUsername());
-        System.out.println("UserDto: " + userDto.getUsername());
-
         String accessToken = jwtUtil.generateAccessToken(userDetails);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails);
-
-        System.out.println("accesstoken: " + accessToken);
-        System.out.println("refreshToken: " + refreshToken);
         return new AuthenticationResponse(accessToken, refreshToken, userDto);
     }
 
-//    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody RegisterDtoRequest registerRequest) {
+        String response = userService.register(registerRequest);
+        if (response.equals("Email already exists")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+    }
+
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Integer userId, @RequestBody UserDto userDto) {
+        User userEntity = userMapper.toEntity(userDto);
+        userEntity.setId(userId);
+        User user = userService.updateUser(userEntity);
+        return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserDto> deleteUser(@PathVariable Integer id) {
+        User user = userService.deleteUser(id);
+        return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+
+    @GetMapping("/getUser/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable Integer id) {
+        User user = userService.getUser(id);
+        return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+
+    @PostMapping("/send")
+    public ResponseEntity<String> sendOTP(@RequestParam String phoneNumber) {
+        System.out.println("Phone number: " + phoneNumber);
+        try {
+            otpService.sendOTP(phoneNumber);
+            return ResponseEntity.ok("OTP sent successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to send OTP: " + e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/verify")
+    public ResponseEntity<String> verifyOTP(@RequestParam String phoneNumber, @RequestParam String otp) {
+        boolean isValid = otpService.verifyOTP(phoneNumber, otp);
+        if (isValid) {
+            return ResponseEntity.ok("OTP verified successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid OTP");
+        }
+    }
 
 
 

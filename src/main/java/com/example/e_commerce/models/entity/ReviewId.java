@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.util.Objects;
+
 
 @Getter
 @Setter
@@ -18,7 +18,9 @@ import java.util.Objects;
 @AllArgsConstructor
 @Embeddable
 public class ReviewId implements Serializable {
+
     private static final long serialVersionUID = 650726739696100232L;
+
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 

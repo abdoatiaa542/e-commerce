@@ -1,6 +1,7 @@
 package com.example.e_commerce.service.impl;
 
 
+import com.example.e_commerce.exceptions.ResourceNotFoundException;
 import com.example.e_commerce.models.entity.Product;
 import com.example.e_commerce.models.entity.User;
 import com.example.e_commerce.reposatory.ProductRepository;
@@ -23,34 +24,37 @@ public class FavoritesServiceImp implements FavoritesService {
 
     public Set<Product> getFavorites(int userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return user.getFavoriteProducts();
     }
 
 
-    public Set<Product> addFavorite(int userId, int productId) {
+    public Product addFavorite(int userId, int productId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
         user.getFavoriteProducts().add(product);
         userRepository.save(user);
+        return product;
 
-        return user.getFavoriteProducts();
     }
 
-    public Set<Product> removeFavorite(int userId, int productId) {
+    public Product removeFavorite(int userId, int productId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product  not found"));
 
-        user.getFavoriteProducts().remove(product);
+        boolean isDeleted = user.getFavoriteProducts().remove(product);
+        if (!isDeleted) {
+            throw new ResourceNotFoundException("Product not found in favorites");
+        }
         userRepository.save(user);
-
-        return user.getFavoriteProducts();
+        return product;
     }
 
 

@@ -8,6 +8,7 @@ import java.util.Set;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CartItemMapper {
+
     CartItem toEntity(CartItemDto cartItemDto);
 
     CartItemDto toDto(CartItem cartItem);

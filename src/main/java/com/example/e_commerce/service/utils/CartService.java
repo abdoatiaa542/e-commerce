@@ -8,9 +8,10 @@ import java.util.Set;
 
 public interface CartService {
 
+
     public Cart addItemToCart(int userId, int productId, int quantity);
 
-    public Set<CartItem> getAllItemsInCart(Integer userId);
+    public Cart getCart(Integer userId);
 
     public Cart removeItemFromCart(int userId, int productId);
 

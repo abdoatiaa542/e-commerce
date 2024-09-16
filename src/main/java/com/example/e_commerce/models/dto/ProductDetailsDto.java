@@ -18,10 +18,11 @@ public class ProductDetailsDto implements Serializable {
     String description;
     BigDecimal unitPrice;
     String imageUrl;
-    CategoryDto category;
+    CategoryResponseDto category;
     String productDetails;
     BigDecimal discountPercentage;
     BigDecimal rate;
-    NutritionDto nutrition;
-    Set<ReviewDto> reviews;
+    NutritionResponseDto nutrition;
+    Set<ReviewRequestDto> reviews;
+
 }

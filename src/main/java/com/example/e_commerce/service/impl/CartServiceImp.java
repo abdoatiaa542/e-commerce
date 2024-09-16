@@ -1,5 +1,6 @@
 package com.example.e_commerce.service.impl;
 
+import com.example.e_commerce.exceptions.ResourceNotFoundException;
 import com.example.e_commerce.models.entity.Cart;
 import com.example.e_commerce.models.entity.CartItem;
 import com.example.e_commerce.models.entity.User;
@@ -26,75 +27,54 @@ public class CartServiceImp implements CartService {
 
     @Override
     public Cart addItemToCart(int userId, int productId, int quantity) {
-        // 1. التأكد من وجود المستخدم في النظام
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 2. التأكد من وجود المنتج في النظام
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        User user = getUserById(userId);
+        Product product = getProductById(productId);
+        Cart cart = cartRepository.findByUserId(userId).orElse(new Cart(user));  // لو مفيش كارت، بنعمل كارت جديد للمستخدم
 
-        // 3. البحث عن كارت المستخدم
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElse(new Cart(user));  // لو مفيش كارت، بنعمل كارت جديد للمستخدم
-
-        // 4. البحث عن المنتج في الكارت
-        CartItem cartItem = cart.getItems().stream()
+        CartItem cartItem = cart.getItems().stream()        // 4. البحث عن المنتج في الكارت
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst()
                 .orElse(new CartItem(cart, product));  // لو المنتج مش موجود، بنعمل عنصر جديد
-//        System.out.println(cartItem.getQuantity());
-//        System.out.println(cartItem.getQuantity() + quantity);
-        // 5. تحديث كمية المنتج في الكارت
-        cartItem.setQuantity(cartItem.getQuantity() + quantity);
 
-        // 6. إضافة أو تحديث العنصر في الكارت
-        cart.addItem(cartItem);
+        cartItem.setQuantity(cartItem.getQuantity() + quantity);        // 5. تحديث كمية المنتج في الكارت
+        cart.addItem(cartItem);        // 6. إضافة أو تحديث العنصر في الكارت
+        return cartRepository.save(cart);        // 7. حفظ الكارت بعد التحديثات
 
-        // 7. حفظ الكارت بعد التحديثات
-        return cartRepository.save(cart);
     }
 
 
     @Override
-    public Set<CartItem> getAllItemsInCart(Integer userId) {
-
-        // 1. التأكد من وجود المستخدم في النظام
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Set<CartItem> cartItem = cartRepository.findByUserId(userId)  // ??
-                .orElseThrow(() -> new RuntimeException("Cart not found")).getItems();
-
-
-        return cartItem;
-
+    public Cart getCart(Integer userId) {
+        User user = getUserById(userId);
+        return cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
     }
 
 
     @Override
     public Cart removeItemFromCart(int userId, int productId) {
-
-        // 1. التأكد من وجود المستخدم في النظام
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 2. البحث عن كارت المستخدم
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
-
-        // 3. البحث عن العنصر المطلوب إزالته
-        CartItem cartItem = cart.getItems().stream()
+        Cart cart = getCart(userId);
+        System.out.println(cart.getItems());
+        System.out.println(cart.getUser());
+        CartItem cartItem = cart.getItems().stream()        // 3. البحث عن العنصر المطلوب إزالته
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Item not found in cart"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found in cart"));
 
-        // 4. إزالة العنصر من الكارت
         cart.getItems().remove(cartItem);
-
-        // 5. حفظ الكارت بعد التحديثات
         return cartRepository.save(cart);
+    }
 
+    @Override
+    public Cart removeAllFromCart(int userId) {
+        User user = getUserById(userId);
+        // 2. البحث عن كارت المستخدم
+        Cart cart = getCartByUserId(userId);
+        // 3. تفريغ الكارت
+        cart.getItems().clear();
+        // 4. حفظ الكارت بعد التحديثات
+        return cartRepository.save(cart);
     }
 
 
@@ -103,22 +83,14 @@ public class CartServiceImp implements CartService {
     }
 
 
-    @Override
-    public Cart removeAllFromCart(int userId) {
-        // 1. التأكد من وجود المستخدم في النظام
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 2. البحث عن كارت المستخدم
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
-
-        // 3. تفريغ الكارت
-        cart.getItems().clear();
-
-        // 4. حفظ الكارت بعد التحديثات
-        return cartRepository.save(cart);
+    private User getUserById(int userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    private Product getProductById(int productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    }
 
 }

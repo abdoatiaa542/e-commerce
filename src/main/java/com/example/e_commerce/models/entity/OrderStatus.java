@@ -17,13 +17,13 @@ import lombok.Setter;
 @Table(name = "order_status", schema = "groceries")
 public class OrderStatus {
 
+
     @Id
     @Column(name = "status_id", nullable = false)
     private Integer id;
 
     @Column(name = "name", nullable = false, length = 45)
     private String name;
-
 
 
 }

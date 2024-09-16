@@ -37,8 +37,11 @@ public class Order {
     @JoinColumn(name = "payment_method_id", nullable = false)
     private PaymentMethod paymentMethod;
 
-    @Column(name = "total_price", nullable = false, precision = 4, scale = 2)
+    @Column(name = "total_price", nullable = false, precision = 9, scale = 2)
     private BigDecimal totalPrice;
+
+    @Column(name = "payment_status", nullable = false)
+    private String paymentStatus;
 
     @OneToMany(mappedBy = "order")
     private Set<OrderItem> orderItems = new LinkedHashSet<>();

@@ -1,9 +1,7 @@
 package com.example.e_commerce.models.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +12,7 @@ import lombok.Setter;
 public class Category {
     @Id
     @Column(name = "category_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "name", nullable = false, length = 45)

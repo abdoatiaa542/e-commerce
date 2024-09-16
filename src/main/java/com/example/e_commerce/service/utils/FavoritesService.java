@@ -9,8 +9,8 @@ public interface FavoritesService {
 
     Set<Product> getFavorites(int id);
 
-    Set<Product> addFavorite(int userId, int productId);
+    Product addFavorite(int userId, int productId);
 
-    Set<Product> removeFavorite(int userId, int productId);
+    Product removeFavorite(int userId, int productId);
 
 }

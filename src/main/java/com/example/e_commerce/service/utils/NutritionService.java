@@ -3,10 +3,12 @@ package com.example.e_commerce.service.utils;
 
 import com.example.e_commerce.models.entity.Nutrition;
 
+import java.util.List;
+
 public interface NutritionService {
 
 
-    Nutrition getNutritionById(Integer id);
+    List<Nutrition> getNutrition();
 
     Nutrition addNutrition(Nutrition nutrition);
 

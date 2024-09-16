@@ -1,6 +1,7 @@
 package com.example.e_commerce.models.dto;
 
 import com.example.e_commerce.models.entity.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -9,13 +10,19 @@ import java.io.Serializable;
  * DTO for {@link User}
  */
 @Value
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto implements Serializable {
-    Integer id;
+
+    //    Integer id;          //
+
     String username;
     String email;
     String password;
-    String address;;
+    String address;
     String phoneNumber;
     String imageUrl;
-    Boolean isDeleted;
+
+//    Boolean isDeleted;   //
+//    Integer roleId;      //
+
 }

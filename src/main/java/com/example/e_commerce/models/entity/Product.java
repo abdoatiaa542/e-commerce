@@ -16,6 +16,7 @@ import java.util.Set;
 public class Product {
     @Id
     @Column(name = "product_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "name", nullable = false, length = 45)
@@ -56,19 +57,13 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private Set<CartItem> cartItems = new LinkedHashSet<>();
 
-//    @ManyToMany
-//    @JoinTable(name = "favorites",
-//            joinColumns = @JoinColumn(name = "product_id"),
-//            inverseJoinColumns = @JoinColumn(name = "user_id"))
-//    private Set<User> favoriteProducts  = new LinkedHashSet<>();
-
     @ManyToMany(mappedBy = "favoriteProducts")
     private Set<User> userWhoFavorited = new LinkedHashSet<>();
 
 
-
     @OneToMany(mappedBy = "product")
     private Set<OrderItem> orderItems = new LinkedHashSet<>();
+
 
     @OneToMany(mappedBy = "product")
     private Set<Review> reviews = new LinkedHashSet<>();

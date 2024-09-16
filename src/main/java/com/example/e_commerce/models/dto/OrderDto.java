@@ -16,8 +16,10 @@ public class OrderDto implements Serializable {
     Integer id;
     Instant orderDate;
     Instant shippingDate;
-    OrderStatusDto status;
-    PaymentMethodDto paymentMethod;
+    String status;        // mapper
+    String paymentMethod; // mapper
+    String paymentStatus;
     BigDecimal totalPrice;
-    Set<OrderItemDto> orderItems;
+    Set<OrderItemDto> orderItems;  //
+
 }

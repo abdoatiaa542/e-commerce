@@ -1,6 +1,7 @@
 package com.example.e_commerce.service.impl;
 
 
+import com.example.e_commerce.exceptions.ResourceNotFoundException;
 import com.example.e_commerce.models.entity.PaymentMethod;
 import com.example.e_commerce.reposatory.PaymentMethodRepository;
 import com.example.e_commerce.service.utils.PaymentMethodService;
@@ -16,7 +17,7 @@ public class paymentMethodServiceImp implements PaymentMethodService {
     public PaymentMethod getPaymentMethodByName(String paymentMethodName) {
 
         return paymentMethodRepository.findByMethodName(paymentMethodName)
-                .orElseThrow(() -> new RuntimeException("PaymentMethod not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("PaymentMethod not found"));
     }
 
 }

@@ -10,3 +10,5 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     Optional<Cart> findByUserId(Integer userId);
 
 }
+
+// لو جيت وانا مردتش ف انا بتوضى

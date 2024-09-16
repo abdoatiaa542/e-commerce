@@ -10,12 +10,14 @@ import java.util.List;
 public interface OrderService {
 
 
-    List<Order> getAllOrders();
+    List<Order> getOrderByUserId(int userId);
 
     Order placeOrder(int userId, PaymentMethod paymentMethod);
 
     void cancelOrder(int orderId);
 
     Order updateStatus(int orderId, String status);
+
+    Order confirmOrderPayment(int orderId);
 
 }

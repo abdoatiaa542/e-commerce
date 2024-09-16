@@ -1,10 +1,13 @@
 package com.example.e_commerce.controllers;
 
 
-import com.example.e_commerce.models.dto.ProductDto;
+import com.example.e_commerce.models.dto.ProductResponseDto;
 import com.example.e_commerce.models.entity.Product;
-import com.example.e_commerce.models.mappers.ProductMapper;
+import com.example.e_commerce.models.mappers.ProductResponseMapper;
+import com.example.e_commerce.security.JwtUtil;
 import com.example.e_commerce.service.utils.FavoritesService;
+import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,25 +22,34 @@ public class FavoritesController {
     private FavoritesService favoritesService;
 
     @Autowired
-    private ProductMapper productmapper;
+    private ProductResponseMapper productmapper;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Set<ProductDto>> getFavorites(@PathVariable int userId) {
+    @GetMapping("")
+    public ResponseEntity<Set<ProductResponseDto>> getFavorites(HttpServletRequest request) {
+        int userId = jwtUtil.getUserIdFromRequest(request);
         Set<Product> productDto = favoritesService.getFavorites(userId);
         return ResponseEntity.ok(productmapper.toProductDtoSet(productDto));
     }
 
-    @PostMapping("/addFavorite")
-    public ResponseEntity<Set<Product>> addFavorite(@PathVariable int userId, @PathVariable int productId) {
-        Set<Product> updatedFavorites = favoritesService.addFavorite(userId, productId);
-        return ResponseEntity.ok(updatedFavorites);
+    @PostMapping("")
+    public ResponseEntity<ProductResponseDto> addFavorite(HttpServletRequest request, @RequestBody JsonNode body) {
+        int userId = jwtUtil.getUserIdFromRequest(request);
+        int productId = body.get("productId").asInt();
+        Product updatedFavorites = favoritesService.addFavorite(userId, productId);
+        return ResponseEntity.ok(productmapper.toDto(updatedFavorites));
     }
 
-    @DeleteMapping("/removeFavorite")
-    public ResponseEntity<Set<Product>> removeFavorite(@PathVariable int userId, @PathVariable int productId) {
-        Set<Product> updatedFavorites = favoritesService.removeFavorite(userId, productId);
-        return ResponseEntity.ok(updatedFavorites);
+
+    @DeleteMapping("")
+    public ResponseEntity<ProductResponseDto> removeFavorite(HttpServletRequest request, @RequestBody JsonNode body) {
+        int userId = jwtUtil.getUserIdFromRequest(request);
+        int productId = body.get("productId").asInt();
+        Product updatedFavorites = favoritesService.removeFavorite(userId, productId);
+        return ResponseEntity.ok(productmapper.toDto(updatedFavorites));
     }
 
 

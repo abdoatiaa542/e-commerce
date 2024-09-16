@@ -13,4 +13,5 @@ import java.io.Serializable;
 public class PaymentMethodDto implements Serializable {
     Integer id;
     String methodName;
+
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/banners")
-public class BannerController {
+public class BannerController {  // admin
 
     @Autowired
     private BannerService bannerService;

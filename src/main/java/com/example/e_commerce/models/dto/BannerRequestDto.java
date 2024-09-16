@@ -11,6 +11,7 @@ import java.time.LocalDate;
  */
 @Value
 public class BannerRequestDto implements Serializable {
+    
     String image;
     String description;
     LocalDate startTime;
