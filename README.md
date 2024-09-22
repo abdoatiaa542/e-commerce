@@ -28,4 +28,9 @@ This project is an **E-Commerce Platform** developed using Spring Boot. The plat
 - **Tools:** Maven, Postman, Swagger for API documentation
 - **Frontend Collaboration:** Flutter
 
+## Database Design
+
+The database design for this e-commerce platform includes several tables that manage users, products, orders, and payments. Below is the design diagram:
+![WhatsApp Image 2024-08-25 at 09 13 12_18f2ae04](https://github.com/user-attachments/assets/5440aea0-db95-4781-a7cc-a41088954626)
+
 
